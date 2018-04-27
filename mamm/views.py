@@ -23,7 +23,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 #Own
-from models import Patient, Stuff, MedicalHistory, MedicalHistoryExcel, MedicalHistoryExcelTemplate, PatientOnlyPhone
+from models import Patient, Stuff, MedicalHistory, MedicalHistoryExcel, MedicalHistoryExcelTemplate, Doctor
 from serializers import PatientSerializer
 
 
@@ -179,6 +179,7 @@ def getmedicalhistory(request):
             dicti = {}
 
             dicti['patient_name'] = history.patient.first_name + ' ' + history.patient.last_name
+            dicti['phonenumber'] = history.patient.phonenumber
             dicti['creation_date'] = history.creation_date
 
             excel_data = []
@@ -274,12 +275,12 @@ def loginphone(request):
         return Response({'error':{'message':'KeyError'}})
     
     try:
-        patient = PatientOnlyPhone.objects.get(phonenumber=phone)
-    except PatientOnlyPhone.DoesNotExist:
+        patient = Patient.objects.get(phonenumber=phone)
+    except Patient.DoesNotExist:
         patient = None
     
     if patient is None:
-        patient = PatientOnlyPhone.objects.create(phonenumber=phone)
+        patient = Patient.objects.create(phonenumber=phone)
     
     rand_str = get_random_string(length=6, allowed_chars='1234567890')
     print(rand_str)
@@ -305,7 +306,7 @@ def verifycode_phone(request):
     verifycode = request.data['verifycode']
 
     try:
-        patient = PatientOnlyPhone.objects.get(phonenumber=phone)
+        patient = Patient.objects.get(phonenumber=phone)
     except Patient.DoesNotExist:
         patient = None
 
@@ -316,3 +317,21 @@ def verifycode_phone(request):
             return Response({'error':{'message':'Wrong Verify Code'}})
 
     return Response({'error': {'message' : 'Failed'}})
+
+@api_view(['GET'])
+def getdoctors(request):
+    doctors = Doctor.objects.all()
+    send_data = []
+    for doctor in doctors:
+        dicti = {}
+
+        if doctor.avatar:
+            print(doctor.avatar)
+            dicti['avatar'] = doctor.avatar.url
+        dicti['description'] = doctor.description
+        dicti['first_name'] = doctor.first_name
+        dicti['last_name'] = doctor.last_name
+
+        send_data.append(dicti)
+    print(send_data)
+    return Response({'data': send_data },status = 200)

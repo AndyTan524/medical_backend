@@ -24,26 +24,25 @@ class Stuff(models.Model):  #Staff Account
         return str(self.user)
 
 @python_2_unicode_compatible
-class Patient(models.Model):
+class Doctor(models.Model):
     first_name = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
     last_name = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
-    email = models.EmailField(max_length=DEFAULT_LENGTH, blank=True)
-    phonenumber = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
-    password = models.CharField(_('password'), max_length=255)
-    chujonservice = models.BooleanField(blank=True, default=False) #0: Not Purchase, 1: Purchase
-    huijonservice = models.BooleanField(blank=True, default=False) #0: Not Purchase, 1: Purchase
-    jiuyiservice = models.BooleanField(blank=True, default=False) #0: Not Purchase, 1: Purchase
-    verifycode = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
+    avatar = models.FileField(upload_to='uploads/doctoravatar', blank = True)
+    description = models.TextField(blank=True)
     
     def __str__(self):
         return str(self.first_name)
 
-class PatientAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'email', 'phonenumber', 'chujonservice', 'huijonservice', 'jiuyiservice')
+class DoctorAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'description',)
 
 @python_2_unicode_compatible
-class PatientOnlyPhone(models.Model):
-    phonenumber = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
+class Patient(models.Model):
+    first_name = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
+    last_name = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
+    email = models.EmailField(max_length=DEFAULT_LENGTH, blank=True)
+    phonenumber = models.CharField(max_length=DEFAULT_LENGTH)
+    password = models.CharField(_('password'), max_length=255)
     chujonservice = models.BooleanField(blank=True, default=False) #0: Not Purchase, 1: Purchase
     huijonservice = models.BooleanField(blank=True, default=False) #0: Not Purchase, 1: Purchase
     jiuyiservice = models.BooleanField(blank=True, default=False) #0: Not Purchase, 1: Purchase
@@ -52,8 +51,8 @@ class PatientOnlyPhone(models.Model):
     def __str__(self):
         return str(self.phonenumber)
 
-class PatientOnlyPhoneAdmin(admin.ModelAdmin):
-    list_display = ('phonenumber', 'chujonservice', 'huijonservice', 'jiuyiservice')
+class PatientAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'email', 'phonenumber', 'chujonservice', 'huijonservice', 'jiuyiservice')
 
 @python_2_unicode_compatible
 class MedicalHistory(models.Model):
@@ -97,12 +96,12 @@ class MedicalHistoryExcel(models.Model):
         return str(self.patient)
 
 class MedicalHistoryExcelAdmin(admin.ModelAdmin):
-    list_display = ('stuff_firstname', 'patient_firstname')
+    list_display = ('stuff_firstname', 'patient_phonenumber')
 
     def stuff_firstname(self, instance):
         return instance.stuff.user
-    def patient_firstname(self, instance):
-        return instance.patient.first_name
+    def patient_phonenumber(self, instance):
+        return instance.patient.phonenumber
 
 @python_2_unicode_compatible
 class MedicalHistoryExcelTemplate(models.Model):
