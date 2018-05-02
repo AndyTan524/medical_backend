@@ -6,12 +6,18 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 
 from .models import Stuff, MedicalHistory, MedicalHistoryAdmin, Patient, PatientAdmin, MedicalHistoryExcel, MedicalHistoryExcelAdmin, MedicalHistoryExcelTemplate, Doctor, DoctorAdmin
+from .models import MedicineHistoryExcel, MedicineHistoryExcelAdmin, MedicineHistoryExcelTemplate
+from .models import TreatmentHistoryExcel, TreatmentHistoryExcelAdmin, TreatmentHistoryExcelTemplate
 
 admin.site.register(Stuff)
 admin.site.register(Patient, PatientAdmin)
 admin.site.register(Doctor, DoctorAdmin)
 admin.site.register(MedicalHistoryExcel, MedicalHistoryExcelAdmin)
 admin.site.register(MedicalHistoryExcelTemplate)
+admin.site.register(MedicineHistoryExcel, MedicineHistoryExcelAdmin)
+admin.site.register(MedicineHistoryExcelTemplate)
+admin.site.register(TreatmentHistoryExcel, TreatmentHistoryExcelAdmin)
+admin.site.register(TreatmentHistoryExcelTemplate)
 admin.site.site_header = 'MEDICAL Administration'
 admin.site.site_title = 'MEDICAL Administration'
 admin.site.index_title = 'MEDICAL Administration'

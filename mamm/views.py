@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 #Default
 import requests
 import openpyxl
+import jwt
 
 #Django
 from django.shortcuts import render
@@ -23,11 +24,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 #Own
-from models import Patient, Stuff, MedicalHistory, MedicalHistoryExcel, MedicalHistoryExcelTemplate, Doctor
+from models import Patient, Stuff, MedicalHistory, MedicalHistoryExcel, MedicalHistoryExcelTemplate, Doctor, MedicineHistoryExcel, TreatmentHistoryExcel
 from serializers import PatientSerializer
 
 
-
+# SECRET FOR JWT
+SECRET = 'Y2UiOmZhbHNlLCJwaG9uZW'
 # Create your views here.
 
 class PatientViewSet(ModelViewSet):
@@ -72,6 +74,25 @@ def send_sms_to_stuff(patient):
         r = requests.post("https://sh2.ipyy.com/smsJson.aspx?action=send", data=payload, headers=headers)
         print(r.status_code)
 
+"""
+Get and Decode the Token in the Header
+"""
+def GetAndDecodeToken(request):
+    if request.META['HTTP_AUTHORIZATION'] is not None:
+        token = request.META['HTTP_AUTHORIZATION']
+        token = token.replace('Bearer ', '')
+        try:
+            decoded_token = jwt.decode(token, SECRET, algorithms=['HS256'])
+        except jwt.InvalidTokenError:
+            return False
+        except jwt.ExpiredSignature:
+            return False
+        except jwt.DecodeError:
+            return False
+        return decoded_token
+    else:
+        return False
+
 def send_verify_sms(phonenumber, verifycode):
     payload = {
         'userid' : "",
@@ -109,9 +130,11 @@ def login(request):
                     'chujonservice': patient.chujonservice,
                     'huijonservice': patient.huijonservice,
                     'jiuyiservice': patient.jiuyiservice
-
                 }
-                return Response({'user': send_data , 'token':patient.email }, status=status.HTTP_201_CREATED)
+                print(send_data)
+                encoded_token = jwt.encode(send_data, SECRET, algorithm = 'HS256').decode('utf-8')
+                print(encoded_token)
+                return Response({ 'token': 'Bearer ' + encoded_token }, status=status.HTTP_201_CREATED)
 
             else:
                 return Response({'error':{'message':"Password Incorrect!"}})
@@ -137,7 +160,7 @@ def register(request):
             serializer = PatientSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response({'data': {'message' : 'Success'}}, status=200)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         else:
@@ -146,8 +169,9 @@ def register(request):
 
 @api_view(['POST'])
 def chuzonservice(request):
-    if request.method == 'POST':
-        email = request.data['email']
+    decoded_token = GetAndDecodeToken(request)
+    if decoded_token != False:
+        email = decoded_token['email']
 
         try:
             patient = Patient.objects.get(email=email)
@@ -160,15 +184,102 @@ def chuzonservice(request):
 
         else:
             return Response({'error': {'message':"Can't find user"}}, status=400)
+    else:
+        return Response({'error': { 'message' : "Unidentified User"}}, status=400)
 
-    return Response({'error': { 'message' : "Failed"}}, status=400)
 
 
 @api_view(['GET'])
-def getmedicalhistory(request):
-    print ("getmedical")
+def getmedicinehistory(request):
+    decoded_token = GetAndDecodeToken(request)
+    if decoded_token != False:
+        print(decoded_token)
+        historys = MedicineHistoryExcel.objects.all()
+        send_data = []
 
-    if request.method == 'GET':
+        for history in historys:
+            print(history.excel)
+            book = openpyxl.load_workbook(history.excel)
+            sheet = book.active
+            dicti = {}
+
+            dicti['patient_name'] = history.patient.first_name + ' ' + history.patient.last_name
+            dicti['phonenumber'] = history.patient.phonenumber
+            dicti['creation_date'] = history.creation_date
+
+            excel_data = []
+            for rowObjects in sheet[sheet.dimensions]:
+                if rowObjects[1].value is not None:
+                    excel_dictionary = {}
+                    excel_dictionary[rowObjects[0].value] = rowObjects[1].value
+                    excel_data.append(excel_dictionary)
+
+            dicti['excel_data'] = excel_data
+    
+            if history.image1:
+                print(history.image1.url)
+                dicti['image1'] = history.image1.url
+
+            if history.image2:
+                dicti['image2'] = history.image2.url
+
+            if history.video1:
+                dicti['video1'] = history.video1.url
+            send_data.append(dicti)
+
+        return Response({'data': send_data },status = 200)
+
+    else:
+        return Response({'error': { 'message' : "Unidentified User"}}, status=400)
+
+@api_view(['GET'])
+def gettreatmenthistory(request):
+    decoded_token = GetAndDecodeToken(request)
+    if decoded_token != False:
+        print(decoded_token)
+        historys = TreatmentHistoryExcel.objects.all()
+        send_data = []
+
+        for history in historys:
+            print(history.excel)
+            book = openpyxl.load_workbook(history.excel)
+            sheet = book.active
+            dicti = {}
+
+            dicti['patient_name'] = history.patient.first_name + ' ' + history.patient.last_name
+            dicti['phonenumber'] = history.patient.phonenumber
+            dicti['creation_date'] = history.creation_date
+
+            excel_data = []
+            for rowObjects in sheet[sheet.dimensions]:
+                if rowObjects[1].value is not None:
+                    excel_dictionary = {}
+                    excel_dictionary[rowObjects[0].value] = rowObjects[1].value
+                    excel_data.append(excel_dictionary)
+
+            dicti['excel_data'] = excel_data
+    
+            if history.image1:
+                print(history.image1.url)
+                dicti['image1'] = history.image1.url
+
+            if history.image2:
+                dicti['image2'] = history.image2.url
+
+            if history.video1:
+                dicti['video1'] = history.video1.url
+            send_data.append(dicti)
+
+        return Response({'data': send_data },status = 200)
+
+    else:
+        return Response({'error': { 'message' : "Unidentified User"}}, status=400)
+
+@api_view(['GET'])
+def getmedicalhistory(request):
+    decoded_token = GetAndDecodeToken(request)
+    if decoded_token != False:
+        print(decoded_token)
         historys = MedicalHistoryExcel.objects.all()
         send_data = []
 
@@ -203,6 +314,9 @@ def getmedicalhistory(request):
             send_data.append(dicti)
 
         return Response({'data': send_data },status = 200)
+
+    else:
+        return Response({'error': { 'message' : "Unidentified User"}}, status=400)
 
 @api_view(['POST'])
 def forgotpass(request):
@@ -266,6 +380,7 @@ def setpass(request):
 
 """
 Login with Phone
+
 """
 @api_view(['POST'])
 def loginphone(request):
@@ -294,9 +409,8 @@ def loginphone(request):
             'chujonservice': patient.chujonservice,
             'huijonservice': patient.huijonservice,
             'jiuyiservice': patient.jiuyiservice
-
         }
-        return Response({ 'user': send_data, 'token': patient.phonenumber }, status=200)
+        return Response({ 'data' : 'Success' }, status=200)
     else:
         return Response({'error': {'message': 'Failed'}}, status=status_code)
 
@@ -312,7 +426,16 @@ def verifycode_phone(request):
 
     if patient is not None:
         if patient.verifycode == verifycode:
-            return Response({'data':'Success'}, status=200)
+            send_data = {
+                'phonenumber': patient.phonenumber,
+                'chujonservice': patient.chujonservice,
+                'huijonservice': patient.huijonservice,
+                'jiuyiservice': patient.jiuyiservice
+            }
+            print(send_data)
+            encoded_token = jwt.encode(send_data, SECRET, algorithm = 'HS256').decode('utf-8')
+            print(encoded_token)
+            return Response({ 'token':'Bearer ' + encoded_token }, status=200)
         else:
             return Response({'error':{'message':'Wrong Verify Code'}})
 
@@ -320,18 +443,22 @@ def verifycode_phone(request):
 
 @api_view(['GET'])
 def getdoctors(request):
-    doctors = Doctor.objects.all()
-    send_data = []
-    for doctor in doctors:
-        dicti = {}
+    decoded_token = GetAndDecodeToken(request)
+    if decoded_token != False:
+        doctors = Doctor.objects.all()
+        send_data = []
+        for doctor in doctors:
+            dicti = {}
 
-        if doctor.avatar:
-            print(doctor.avatar)
-            dicti['avatar'] = doctor.avatar.url
-        dicti['description'] = doctor.description
-        dicti['first_name'] = doctor.first_name
-        dicti['last_name'] = doctor.last_name
+            if doctor.avatar:
+                print(doctor.avatar)
+                dicti['avatar'] = doctor.avatar.url
+            dicti['description'] = doctor.description
+            dicti['first_name'] = doctor.first_name
+            dicti['last_name'] = doctor.last_name
 
-        send_data.append(dicti)
-    print(send_data)
-    return Response({'data': send_data },status = 200)
+            send_data.append(dicti)
+        print(send_data)
+        return Response({'data': send_data },status = 200)
+    else:
+        return Response({'error': { 'message' : "Unidentified User"}}, status=400)

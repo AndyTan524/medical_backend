@@ -19,7 +19,9 @@ urlpatterns = [
 	url(r'^api/setpass/', views.setpass),
 
 	# Get medical History 
-	url(r'^api/medicalhistory/', views.getmedicalhistory),
+	url(r'^api/medicalhistory/', views.getmedicalhistory), #chujon
+	url(r'^api/medicinehistory/', views.getmedicinehistory), #huijon
+	url(r'^api/treathistory/', views.gettreatmenthistory), #jiuyi
 
 	# Get Doctor
 	url(r'^api/doctors/', views.getdoctors),
