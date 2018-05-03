@@ -134,7 +134,7 @@ def login(request):
                 print(send_data)
                 encoded_token = jwt.encode(send_data, SECRET, algorithm = 'HS256').decode('utf-8')
                 print(encoded_token)
-                return Response({ 'token': 'Bearer ' + encoded_token }, status=status.HTTP_201_CREATED)
+                return Response({ 'data': send_data, 'token': 'Bearer ' + encoded_token }, status=status.HTTP_201_CREATED)
 
             else:
                 return Response({'error':{'message':"Password Incorrect!"}})
@@ -435,7 +435,7 @@ def verifycode_phone(request):
             print(send_data)
             encoded_token = jwt.encode(send_data, SECRET, algorithm = 'HS256').decode('utf-8')
             print(encoded_token)
-            return Response({ 'token':'Bearer ' + encoded_token }, status=200)
+            return Response({ 'data': send_data, 'token':'Bearer ' + encoded_token }, status=200)
         else:
             return Response({'error':{'message':'Wrong Verify Code'}})
 
