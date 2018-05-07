@@ -147,24 +147,34 @@ def register(request):
     print("Register")
     if request.method == 'POST':
         email = request.data['email']
-        print(email)
+        phonenumber = request.data['phonenumber']
+
         try:
             patient = Patient.objects.get(email=email)
         except Patient.DoesNotExist:
             patient = None
-
-        if patient is None:
-            password = request.data['password']
-            print(make_password(password))
-            request.data['password'] = make_password(password)
-            serializer = PatientSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response({'data': {'message' : 'Success'}}, status=200)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        else:
+        
+        if patient is not None:
             return Response({'error': { 'message':"User with that email already exist!"}})
+        else:
+            try:
+                patient = Patient.objects.get(phonenumber=phonenumber)
+            except Patient.DoesNotExist:
+                patient = None
+
+            if patient is None:
+                password = request.data['password']
+                print(make_password(password))
+                request.data['password'] = make_password(password)
+                serializer = PatientSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response({'data': {'message' : 'Success'}}, status=200)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                
+            else:
+                return Response({'error': { 'message':"User with that phonenumber already exist!"}})
+
 
 
 @api_view(['POST'])
