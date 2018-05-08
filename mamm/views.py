@@ -98,8 +98,8 @@ def send_verify_sms(phonenumber, verifycode):
         'userid' : "",
         'account' : "jkwl518",
         'password' : "jkwl51825",
-        'mobile' : verifycode,
-        'content': "Verify Code is "+ phonenumber +"【爱克】",
+        'mobile' : phonenumber,
+        'content': "Verify Code is "+ verifycode +"【爱克】",
         'sendTime' : "",
         'extno' : ""
     }
