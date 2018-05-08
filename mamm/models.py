@@ -29,7 +29,7 @@ class Doctor(models.Model):
     last_name = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
     avatar = models.FileField(upload_to='uploads/doctoravatar', blank = True)
     description = models.TextField(blank=True)
-    doctor_type = models.CharField(max_length=DEFAULT_LENGTH, choices=(('medical', 'huizon'),('treat', 'jiuyi')),
+    doctor_type = models.CharField(max_length=DEFAULT_LENGTH, choices=(('huizon', 'huizon'),('jiuyi', 'jiuyi')),
                                       default='medical')
     def __str__(self):
         return str(self.first_name)

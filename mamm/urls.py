@@ -25,7 +25,7 @@ urlpatterns = [
 
 	# Get Doctor
 	url(r'^api/doctors/', views.getdoctors),
-
+	
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

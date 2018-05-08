@@ -455,19 +455,23 @@ def verifycode_phone(request):
 def getdoctors(request):
     decoded_token = GetAndDecodeToken(request)
     if decoded_token != False:
+        req_type = ['huizon', 'jiuyi']
+        type_id = request.GET.get('type', '')
+
         doctors = Doctor.objects.all()
         send_data = []
         for doctor in doctors:
-            dicti = {}
+            if doctor.doctor_type == req_type[int(type_id)]:
+                print(doctor)
+                dicti = {}
 
-            if doctor.avatar:
-                print(doctor.avatar)
-                dicti['avatar'] = doctor.avatar.url
-            dicti['description'] = doctor.description
-            dicti['first_name'] = doctor.first_name
-            dicti['last_name'] = doctor.last_name
-
-            send_data.append(dicti)
+                if doctor.avatar:
+                    dicti['avatar'] = doctor.avatar.url
+                dicti['description'] = doctor.description
+                dicti['first_name'] = doctor.first_name
+                dicti['last_name'] = doctor.last_name
+                dicti['doctor_type'] = doctor.doctor_type
+                send_data.append(dicti)
         print(send_data)
         return Response({'data': send_data },status = 200)
     else:
