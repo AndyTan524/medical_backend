@@ -24,7 +24,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 #Own
-from models import Patient, Stuff, MedicalHistory, MedicalHistoryExcel, MedicalHistoryExcelTemplate, Doctor, MedicineHistoryExcel, TreatmentHistoryExcel
+from models import Patient, Stuff, MedicalHistory, MedicalHistoryExcel, MedicalHistoryExcelTemplate, Doctor, MedicineHistoryExcel, TreatmentHistoryExcel, ReferralHistory, PdfTemplate
 from serializers import PatientSerializer
 
 
@@ -93,13 +93,13 @@ def GetAndDecodeToken(request):
     else:
         return False
 
-def send_verify_sms(phonenumber, verifycode):
+def send_verify_sms(phonenumber, content):
     payload = {
         'userid' : "",
         'account' : "jkwl518",
         'password' : "jkwl51825",
         'mobile' : phonenumber,
-        'content': "Verify Code is "+ verifycode +"【爱克】",
+        'content': content,
         'sendTime' : "",
         'extno' : ""
     }
@@ -148,33 +148,35 @@ def register(request):
     if request.method == 'POST':
         email = request.data['email']
         phonenumber = request.data['phonenumber']
-
-        try:
-            patient = Patient.objects.get(email=email)
-        except Patient.DoesNotExist:
-            patient = None
-        
-        if patient is not None:
-            return Response({'error': { 'message':"User with that email already exist!"}})
-        else:
+        referralvcode = request.data['referralvcode']
+        if verifyvcode_referral(phonenumber, referralvcode) == 1:
             try:
-                patient = Patient.objects.get(phonenumber=phonenumber)
+                patient = Patient.objects.get(email=email)
             except Patient.DoesNotExist:
                 patient = None
-
-            if patient is None:
-                password = request.data['password']
-                print(make_password(password))
-                request.data['password'] = make_password(password)
-                serializer = PatientSerializer(data=request.data)
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response({'data': {'message' : 'Success'}}, status=200)
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                
+            
+            if patient is not None:
+                return Response({'error': { 'message':"User with that email already exist!"}})
             else:
-                return Response({'error': { 'message':"User with that phonenumber already exist!"}})
+                try:
+                    patient = Patient.objects.get(phonenumber=phonenumber)
+                except Patient.DoesNotExist:
+                    patient = None
 
+                if patient is None:
+                    password = request.data['password']
+                    print(make_password(password))
+                    request.data['password'] = make_password(password)
+                    serializer = PatientSerializer(data=request.data)
+                    if serializer.is_valid():
+                        serializer.save()
+                        return Response({'data': {'message' : 'Success'}}, status=200)
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    
+                else:
+                    return Response({'error': { 'message':"User with that phonenumber already exist!"}})
+        else:
+            return Response({'error': {'message': "VerifyCode Mismatch"}})
 
 
 @api_view(['POST'])
@@ -345,7 +347,8 @@ def forgotpass(request):
         patient.verifycode = rand_str
         patient.save()
         if patient.phonenumber is not None:
-            statuscode = send_verify_sms(patient.phonenumber, rand_str)
+            content = "Verify Code is "+ rand_str +"【爱克】"
+            statuscode = send_verify_sms(patient.phonenumber, content)
             return Response({'data': 'Success'}, status=200)
         else:
             return Response({'error' : {'message':'Patient phone number does not exist'}})
@@ -411,7 +414,8 @@ def loginphone(request):
     print(rand_str)
     patient.verifycode = rand_str
     patient.save()
-    status_code = send_verify_sms(patient.phonenumber, rand_str)
+    content = "Verify Code is "+ rand_str +"【爱克】"
+    status_code = send_verify_sms(patient.phonenumber, content)
 
     if status_code == 200:
         send_data = {
@@ -476,3 +480,37 @@ def getdoctors(request):
         return Response({'data': send_data },status = 200)
     else:
         return Response({'error': { 'message' : "Unidentified User"}}, status=400)
+
+@api_view(['POST'])
+def sendvcode_referral(request):
+    decoded_token = GetAndDecodeToken(request)
+    if decoded_token != False:
+        phonenumber = request.data['referralphone']
+        rand_str = get_random_string(length=6, allowed_chars='1234567890')
+        ref_history = ReferralHistory(phonenumber=phonenumber, verifycode=rand_str)
+        ref_history.save()
+        content = "AppDownloadLink:" + "https://medicalapp" + "Verify Code is "+ rand_str +"【爱克】"
+        statuscode = send_verify_sms(phonenumber, content)
+        return Response(status=200)
+
+def verifyvcode_referral(phonenumber, vcode):
+    try:
+        referral_history = ReferralHistory.objects.get(phonenumber = phonenumber)
+    except ReferralHistory.DoesNotExist:
+        return 2 
+    if referral_history.verifycode == vcode:
+        return 1
+    else:
+        return 0
+
+@api_view(['GET'])
+def getpdftemplate(request):
+    try:
+        pdftemplates = PdfTemplate.objects.all()
+    except PdfTemplate.DoesNotExist:
+        return Response({'error': { 'message' : "No Pdf template"}}, status=400)
+
+    for pdftemplate in pdftemplates:
+        print(pdftemplate.pdf)
+        return Response({'data': pdftemplate.pdf.url},status = 200)
+    

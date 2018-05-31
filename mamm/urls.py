@@ -25,7 +25,12 @@ urlpatterns = [
 
 	# Get Doctor
 	url(r'^api/doctors/', views.getdoctors),
+
+	# Send Verify Code on the Admin, Stuff, Doctor, Patient(Already Created)
+	url(r'^api/referral/sendverifycode', views.sendvcode_referral),
 	
+	# 
+	url(r'^api/pdftemplate', views.getpdftemplate),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

@@ -170,3 +170,15 @@ class TreatmentHistoryExcelTemplate(models.Model):
     excel = models.FileField(upload_to='uploads/excel/treatmenttemplate', blank = True, validators=[FileExtensionValidator(['xlsx'])])
     def __str__(self):
         return str(self.excel)
+
+class ReferralHistory(models.Model):
+    phonenumber = models.CharField(max_length=DEFAULT_LENGTH)
+    verifycode = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
+    
+    def __str__(self):
+        return str(self.phonenumber)
+
+class PdfTemplate(models.Model):
+    pdf = models.FileField(upload_to='uploads/pdf', blank = True, validators=[FileExtensionValidator(['pdf'])])
+    def __str__(self):
+        return str(self.pdf)
