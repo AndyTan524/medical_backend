@@ -489,7 +489,7 @@ def sendvcode_referral(request):
         rand_str = get_random_string(length=6, allowed_chars='1234567890')
         ref_history = ReferralHistory(phonenumber=phonenumber, verifycode=rand_str)
         ref_history.save()
-        content = "AppDownloadLink:" + "https://medicalapp" + "Verify Code is "+ rand_str +"【爱克】"
+        content = "【用心医】欢迎您，App程序下载地址是 " + "https://medicalapp" + "邀请码是"+ rand_str +"【爱克】"
         statuscode = send_verify_sms(phonenumber, content)
         return Response(status=200)
 
