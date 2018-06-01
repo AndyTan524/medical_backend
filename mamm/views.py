@@ -414,7 +414,7 @@ def loginphone(request):
     print(rand_str)
     patient.verifycode = rand_str
     patient.save()
-    content = "Verify Code is "+ rand_str +"【爱克】"
+    content = "【用心医】欢迎您，您的验证码是 "+ rand_str +"【爱克】"
     status_code = send_verify_sms(patient.phonenumber, content)
 
     if status_code == 200:
