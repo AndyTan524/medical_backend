@@ -25,6 +25,9 @@
             <div class="row">
                 <a href="/admin" class="btn btn-primary">Login As Stuff</a>
             </div>
+            <div class="row">
+                <a href="/sendbulkmessage" class="btn btn-primary">Send Bulk Message</a>
+            </div>
             {% for template in templates %}
             <div class = "row">
                 <a href = "http://192.168.1.8:8000/api/{{template.excel.url}}" download>{{template.excel.name}}</a>

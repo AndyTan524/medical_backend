@@ -10,6 +10,9 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import gettext as _
 from django.core.validators import FileExtensionValidator
 
+from apps import OverwriteStorage
+import os
+
 DEFAULT_LENGTH = 50
 
 # Create your models here.
@@ -178,7 +181,20 @@ class ReferralHistory(models.Model):
     def __str__(self):
         return str(self.phonenumber)
 
-class PdfTemplate(models.Model):
-    pdf = models.FileField(upload_to='uploads/pdf', blank = True, validators=[FileExtensionValidator(['pdf'])])
+@python_2_unicode_compatible
+class DiseaseType(models.Model):
+    diseasetype = models.CharField(max_length=DEFAULT_LENGTH,blank=True)
     def __str__(self):
-        return str(self.pdf)
+        return str(self.diseasetype)
+
+
+def content_file_name(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.pdf" % (instance.disease_type.diseasetype)
+    return os.path.join('uploads/pdf', filename)
+
+class PdfTemplate(models.Model):
+    disease_type = models.ForeignKey(DiseaseType, on_delete=models.CASCADE)
+    pdf = models.FileField(max_length = DEFAULT_LENGTH, upload_to=content_file_name, storage=OverwriteStorage(), validators=[FileExtensionValidator(['pdf'])])
+    def __str__(self):
+        return str(self.disease_type)

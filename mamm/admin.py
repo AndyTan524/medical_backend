@@ -10,6 +10,7 @@ from .models import MedicineHistoryExcel, MedicineHistoryExcelAdmin, MedicineHis
 from .models import TreatmentHistoryExcel, TreatmentHistoryExcelAdmin, TreatmentHistoryExcelTemplate
 from .models import ReferralHistory
 from .models import PdfTemplate
+from .models import DiseaseType
 
 admin.site.register(Stuff)
 admin.site.register(Patient, PatientAdmin)
@@ -22,6 +23,7 @@ admin.site.register(TreatmentHistoryExcel, TreatmentHistoryExcelAdmin)
 admin.site.register(TreatmentHistoryExcelTemplate)
 admin.site.register(ReferralHistory)
 admin.site.register(PdfTemplate)
+admin.site.register(DiseaseType)
 admin.site.site_header = 'MEDICAL Administration'
 admin.site.site_title = 'MEDICAL Administration'
 admin.site.index_title = 'MEDICAL Administration'

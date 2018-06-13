@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ChromeExtension</title>
+  <base href="/">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link src = "./assets/font-awesome.css" rel="stylesheet">
+  <link href = "https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!-- <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet"> -->
+  <style>
+    .container {
+      margin : 20px;
+      width: 400px;
+    }
+    /* .rowsize {
+
+    } */
+    .btn-option {
+      width: 100%;
+      height: 100%;
+      background-color: #e3e3e3;
+      outline-color: white;
+      -moz-border-radius: 10px;
+      -webkit-border-radius: 10px;
+      border-radius: 10px;
+      font-size: 20px;
+    }
+    .btn-item {
+      width: 67%;
+      height: 100%;
+      outline-color: #e3e3e3;
+      -moz-border-radius: 10px;
+      -webkit-border-radius: 10px;
+      border-radius: 10px;
+      font-size: 15px;
+      margin: 7px;
+    }
+    .rowback {
+      height: 100%;
+      vertical-align: middle;
+      background-color: #e3e3e3;
+      -moz-border-radius: 10px;
+      -webkit-border-radius: 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .margin-10 {
+      margin-left: 10px;
+    }
+    .margin-b-10 {
+        margin-bottom: 10px;
+    }
+    .margin-t-10 {
+        margin-top: 10px;
+    }
+    .input-100{
+      width: 100%;
+      margin: 4px;
+    }
+    select {
+      height: 35px;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+    <div class="container" id="cont">
+
+        <form action = "{% url 'mamm:process_bulkmessage' %}" method = "POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row rowback">
+                <div id = "phone0">
+                    <div class="col-sm-8 margin-b-10 margin-t-10">
+                        <input style="width: 100%" id="phonenumber0" name="phonenumber0" placeholder="电话号码"/>
+                    </div>
+                    <div class="col-sm-2 margin-b-10 margin-t-10">
+                        <button class="add-item" type="button">+</button>
+                    </div>
+                    <div class="col-sm-2 margin-b-10 margin-t-10">
+                        <button class="remove-item"  type="button">-</button>
+                        <h2 id="group" hidden>0</h2>
+                    </div>
+                </div>
+            </div>
+            <input type="text" id="savecount" name="savecount" value='0'>
+            <input type="submit" class="btn-option" value="Send Verify Code"/>
+        </form>
+</div>
+
+</body>
+<script>
+    var count = 1;
+    $( document ).ready(function() {
+        $(document).on('click','.add-item', function(){
+            $("#savecount").val(count);
+            var first = '<div id="phone'+count+'">'+
+                            '<div class="col-sm-8 margin-b-8">' +
+                                '<input style="width: 100%" id="phonenumber' +count+'" name="phonenumber' +count +'" placeholder="电话号码"/>' +
+                            '</div>'+
+                            '<div class="col-sm-2 margin-b-2">'+
+                                '<button class="add-item" type="button">+</button>'+
+                            '</div>'+
+                            '<div class="col-sm-2 margin-b-10">'+
+                                '<button class="remove-item" type="button">-</button>'+
+                                '<h2 id="group" hidden>'+count+'</h2>'+
+                            '</div>'+
+                        '</div>';
+            // alert(first)
+            count = count + 1;
+            
+            $(this).parent().parent().parent().append(
+                first
+            );
+        });
+        
+        $(document).on('click','.remove-item',function() {
+            id = $(this).next()[0].innerHTML;
+            $("#phone"+id).remove();
+        });
+    });
+
+</script>
+</html>

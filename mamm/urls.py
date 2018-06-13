@@ -29,8 +29,13 @@ urlpatterns = [
 	# Send Verify Code on the Admin, Stuff, Doctor, Patient(Already Created)
 	url(r'^api/referral/sendverifycode', views.sendvcode_referral),
 	
-	# 
-	url(r'^api/pdftemplate', views.getpdftemplate),
+	# Get PDF template URL service
+	url(r'^api/pdftemplate/(?P<slug>[\w-]+)/$', views.getpdftemplate),
+
+	# Send Bulk Message
+	url(r'^sendbulkmessage', views.sendbulkmessage, name='sendbulkmessage'),
+	url(r'^bulkmessageprocess/', views.processbulkmessage, name='process_bulkmessage'),
+
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

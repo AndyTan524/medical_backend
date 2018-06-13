@@ -12,6 +12,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core import serializers
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render, redirect
 from django.utils.crypto import get_random_string
 
 #Rest_Framework
@@ -504,13 +506,31 @@ def verifyvcode_referral(phonenumber, vcode):
         return 0
 
 @api_view(['GET'])
-def getpdftemplate(request):
+def getpdftemplate(request, slug):
+    print(slug)
     try:
-        pdftemplates = PdfTemplate.objects.all()
+        pdftemplate = PdfTemplate.objects.get(description=slug)
     except PdfTemplate.DoesNotExist:
         return Response({'error': { 'message' : "No Pdf template"}}, status=400)
-
-    for pdftemplate in pdftemplates:
-        print(pdftemplate.pdf)
-        return Response({'data': pdftemplate.pdf.url},status = 200)
+    return Response({'data': pdftemplate.pdf.url},status = 200)
     
+
+@staff_member_required
+def sendbulkmessage(request):
+    return render(request, 'mamm/medical/bulkmessage.html')
+
+@login_required
+@api_view(['POST'])
+def processbulkmessage(request):
+    count = request.POST.get('savecount')
+    print(count)
+    for i in range(0, int(count)+1):
+        # print(request.POST.get('phonenumber' +`i`))
+        if request.POST.get('phonenumber' +`i`) != None:
+            phonenumber = request.POST.get('phonenumber' +`i`)
+            rand_str = get_random_string(length=6, allowed_chars='1234567890')
+            ref_history = ReferralHistory(phonenumber=phonenumber, verifycode=rand_str)
+            ref_history.save()
+            content = "【用心医】欢迎您，App程序下载地址是 " + "https://medicalapp" + "邀请码是"+ rand_str +"【爱克】"
+            statuscode = send_verify_sms(phonenumber, content)
+    return HttpResponse("Message Sent")
