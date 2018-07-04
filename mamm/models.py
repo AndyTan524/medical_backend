@@ -7,7 +7,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
-from django.utils.translation import gettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.core.validators import FileExtensionValidator
 
 from apps import OverwriteStorage
@@ -25,6 +25,9 @@ class Stuff(models.Model):  #Staff Account
 
     def __str__(self):
         return str(self.user)
+    class Meta:
+        verbose_name = '工作人员'
+        verbose_name_plural = '工作人员'
 
 @python_2_unicode_compatible
 class Doctor(models.Model):
@@ -36,6 +39,10 @@ class Doctor(models.Model):
                                       default='huizon')
     def __str__(self):
         return str(self.first_name)
+    
+    class Meta:
+        verbose_name = '医生'
+        verbose_name_plural = '医生'
 
 class DoctorAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'description',)
@@ -54,6 +61,10 @@ class Patient(models.Model):
     
     def __str__(self):
         return str(self.phonenumber)
+    
+    class Meta:
+        verbose_name = '病人'
+        verbose_name_plural = '病人'
 
 class PatientAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'email', 'phonenumber', 'chujonservice', 'huijonservice', 'jiuyiservice')
@@ -99,6 +110,10 @@ class MedicalHistoryExcel(models.Model):
     def __str__(self):
         return str(self.patient)
 
+    class Meta:
+        verbose_name = '医疗excel'
+        verbose_name_plural = '医疗excel'
+
 class MedicalHistoryExcelAdmin(admin.ModelAdmin):
     list_display = ('stuff_firstname', 'patient_phonenumber')
 
@@ -113,6 +128,9 @@ class MedicalHistoryExcelTemplate(models.Model):
     def __str__(self):
         return str(self.excel)
 
+    class Meta:
+        verbose_name = '医疗excel模版'
+        verbose_name_plural = '医疗excel模版'
 
 @python_2_unicode_compatible
 class MedicineHistoryExcel(models.Model):
@@ -130,6 +148,10 @@ class MedicineHistoryExcel(models.Model):
     def __str__(self):
         return str(self.patient)
 
+    class Meta:
+        verbose_name = '治疗excel'
+        verbose_name_plural = '治疗excel'
+
 class MedicineHistoryExcelAdmin(admin.ModelAdmin):
     list_display = ('stuff_firstname', 'patient_phonenumber')
 
@@ -143,6 +165,9 @@ class MedicineHistoryExcelTemplate(models.Model):
     excel = models.FileField(upload_to='uploads/excel/medicinetemplate', blank = True, validators=[FileExtensionValidator(['xlsx'])])
     def __str__(self):
         return str(self.excel)
+    class Meta:
+        verbose_name = '治疗excel模版'
+        verbose_name_plural = '治疗excel模版'
 
 @python_2_unicode_compatible
 class TreatmentHistoryExcel(models.Model):
@@ -160,6 +185,10 @@ class TreatmentHistoryExcel(models.Model):
     def __str__(self):
         return str(self.patient)
 
+    class Meta:
+        verbose_name = '病历excel'
+        verbose_name_plural = '病历excel'
+
 class TreatmentHistoryExcelAdmin(admin.ModelAdmin):
     list_display = ('stuff_firstname', 'patient_phonenumber')
 
@@ -173,6 +202,9 @@ class TreatmentHistoryExcelTemplate(models.Model):
     excel = models.FileField(upload_to='uploads/excel/treatmenttemplate', blank = True, validators=[FileExtensionValidator(['xlsx'])])
     def __str__(self):
         return str(self.excel)
+    class Meta:
+        verbose_name = '病历excel模版'
+        verbose_name_plural = '病历excel模版'
 
 class ReferralHistory(models.Model):
     phonenumber = models.CharField(max_length=DEFAULT_LENGTH)
@@ -180,13 +212,21 @@ class ReferralHistory(models.Model):
     
     def __str__(self):
         return str(self.phonenumber)
+    
+    class Meta:
+        verbose_name = '邀请模版'
+        verbose_name_plural = '邀请模版'
 
 @python_2_unicode_compatible
 class DiseaseType(models.Model):
     diseasetype = models.CharField(max_length=DEFAULT_LENGTH,blank=True)
+        
     def __str__(self):
         return str(self.diseasetype)
 
+    class Meta:
+        verbose_name = '疾病l类别'
+        verbose_name_plural = '疾病l类别'
 
 def content_file_name(instance, filename):
     ext = filename.split('.')[-1]
@@ -198,3 +238,6 @@ class PdfTemplate(models.Model):
     pdf = models.FileField(max_length = DEFAULT_LENGTH, upload_to=content_file_name, storage=OverwriteStorage(), validators=[FileExtensionValidator(['pdf'])])
     def __str__(self):
         return str(self.disease_type)
+    class Meta:
+        verbose_name = 'pdf模版'
+        verbose_name_plural = 'pdf模版'

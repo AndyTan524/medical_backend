@@ -5,9 +5,10 @@ from django.apps import AppConfig
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 import os
-
+from django.utils.translation import ugettext_lazy as _
 class MammConfig(AppConfig):
     name = 'mamm'
+    verbose_name = _('Mamm')
 
 
 class OverwriteStorage(FileSystemStorage):

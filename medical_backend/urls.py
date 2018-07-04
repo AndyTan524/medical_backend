@@ -17,6 +17,8 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.conf.urls import include, url
 from django.views import static
+from django.conf.urls.i18n import i18n_patterns
+
 
 from rest_framework import routers
 from rest_framework.authtoken import views
@@ -24,11 +26,13 @@ from rest_framework.authtoken import views
 from mamm import views as mamm_views
 import settings
 
-urlpatterns = [
+urlpatterns = i18n_patterns(
     url(r'^admin/', admin.site.urls),
     url(r'^', include('mamm.urls')),
     url(r'^api-token-auth/', views.obtain_auth_token),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^api/media/(?P<path>.*)$', static.serve, {'document_root' : settings.MEDIA_ROOT})
-]
+    url(r'^api/media/(?P<path>.*)$', static.serve, {'document_root' : settings.MEDIA_ROOT}),
+    prefix_default_language=False
+
+)
 
