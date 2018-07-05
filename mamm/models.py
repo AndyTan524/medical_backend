@@ -57,7 +57,7 @@ class Patient(models.Model):
     chujonservice = models.BooleanField(_('出诊服务'), blank=True, default=False) #0: Not Purchase, 1: Purchase
     huijonservice = models.BooleanField(_('会诊服务'), blank=True, default=False) #0: Not Purchase, 1: Purchase
     jiuyiservice = models.BooleanField(_('就一服务'), blank=True, default=False) #0: Not Purchase, 1: Purchase
-    verifycode = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
+    verifycode = models.CharField(_("邀请码"), max_length=DEFAULT_LENGTH, blank=True)
     
     def __str__(self):
         return str(self.phonenumber)
