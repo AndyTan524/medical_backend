@@ -234,7 +234,7 @@ def content_file_name(instance, filename):
     return os.path.join('uploads/pdf', filename)
 
 class PdfTemplate(models.Model):
-    disease_type = models.ForeignKey(DiseaseType, on_delete=models.CASCADE)
+    disease_type = models.ForeignKey(DiseaseType, on_delete=models.CASCADE, verbose_name=_("疾病类型"))
     pdf = models.FileField(max_length = DEFAULT_LENGTH, upload_to=content_file_name, storage=OverwriteStorage(), validators=[FileExtensionValidator(['pdf'])])
     def __str__(self):
         return str(self.disease_type)
