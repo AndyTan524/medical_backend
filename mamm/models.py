@@ -18,10 +18,10 @@ DEFAULT_LENGTH = 50
 # Create your models here.
 @python_2_unicode_compatible
 class Stuff(models.Model):  #Staff Account
-    user = models.OneToOneField(User)
-    hospital = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
-    phone = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
-    home_work_phone = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
+    user = models.OneToOneField(User, verbose_name=_("用户"))
+    hospital = models.CharField(_("医院"),max_length=DEFAULT_LENGTH, blank=True)
+    phone = models.CharField(_("电话号码"),max_length=DEFAULT_LENGTH, blank=True)
+    home_work_phone = models.CharField(_("座机"),max_length=DEFAULT_LENGTH, blank=True)
 
     def __str__(self):
         return str(self.user)
@@ -31,11 +31,11 @@ class Stuff(models.Model):  #Staff Account
 
 @python_2_unicode_compatible
 class Doctor(models.Model):
-    first_name = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
-    last_name = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
-    avatar = models.FileField(upload_to='uploads/doctoravatar', blank = True)
-    description = models.TextField(blank=True)
-    doctor_type = models.CharField(max_length=DEFAULT_LENGTH, choices=(('huizon', 'huizon'),('jiuyi', 'jiuyi')),
+    first_name = models.CharField(_('姓氏'), max_length=DEFAULT_LENGTH, blank=True)
+    last_name = models.CharField(_('名'), max_length=DEFAULT_LENGTH, blank=True)
+    avatar = models.FileField(_('个人资料图片'), upload_to='uploads/doctoravatar', blank = True)
+    description = models.TextField(_('描述'), blank=True)
+    doctor_type = models.CharField(_('医生类型'), max_length=DEFAULT_LENGTH, choices=(('huizon', 'huizon'),('jiuyi', 'jiuyi')),
                                       default='huizon')
     def __str__(self):
         return str(self.first_name)
@@ -49,14 +49,14 @@ class DoctorAdmin(admin.ModelAdmin):
 
 @python_2_unicode_compatible
 class Patient(models.Model):
-    first_name = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
-    last_name = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
-    email = models.EmailField(max_length=DEFAULT_LENGTH, blank=True)
-    phonenumber = models.CharField(max_length=DEFAULT_LENGTH)
+    first_name = models.CharField(_('姓氏'),max_length=DEFAULT_LENGTH, blank=True)
+    last_name = models.CharField(_('名'), max_length=DEFAULT_LENGTH, blank=True)
+    email = models.EmailField(_('邮箱'), max_length=DEFAULT_LENGTH, blank=True)
+    phonenumber = models.CharField(_('病人电话'), max_length=DEFAULT_LENGTH)
     password = models.CharField(_('password'), max_length=255)
-    chujonservice = models.BooleanField(blank=True, default=False) #0: Not Purchase, 1: Purchase
-    huijonservice = models.BooleanField(blank=True, default=False) #0: Not Purchase, 1: Purchase
-    jiuyiservice = models.BooleanField(blank=True, default=False) #0: Not Purchase, 1: Purchase
+    chujonservice = models.BooleanField(_('出诊服务'), blank=True, default=False) #0: Not Purchase, 1: Purchase
+    huijonservice = models.BooleanField(_('会诊服务'), blank=True, default=False) #0: Not Purchase, 1: Purchase
+    jiuyiservice = models.BooleanField(_('就一服务'), blank=True, default=False) #0: Not Purchase, 1: Purchase
     verifycode = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
     
     def __str__(self):
@@ -76,14 +76,14 @@ class MedicalHistory(models.Model):
 
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
 
-    height = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
-    weight = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
-    bloodtype = models.CharField(max_length=DEFAULT_LENGTH, choices=(
+    height = models.CharField(_('身高'), max_length=DEFAULT_LENGTH, blank=True)
+    weight = models.CharField(_('体重'), max_length=DEFAULT_LENGTH, blank=True)
+    bloodtype = models.CharField(_('血型'),max_length=DEFAULT_LENGTH, choices=(
         ('o', 'O'), ('a', 'A'), ('ab', 'AB'), ('b', 'B')))
-    smoke = models.BooleanField(blank=True, default=False)
-    wine = models.BooleanField(blank=True, default=False)
+    smoke = models.BooleanField(_('抽烟'),blank=True, default=False)
+    wine = models.BooleanField(_('饮酒'),blank=True, default=False)
 
-    creation_date = models.DateTimeField(default=timezone.now, blank=True)
+    creation_date = models.DateTimeField(_('创建时间'),default=timezone.now, blank=True)
 
     def __str__(self):
         return str(self.patient)
@@ -96,16 +96,16 @@ class MedicalHistoryAdmin(admin.ModelAdmin):
 
 @python_2_unicode_compatible
 class MedicalHistoryExcel(models.Model):
-    stuff = models.ForeignKey(Stuff, on_delete=models.CASCADE)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    stuff = models.ForeignKey(Stuff, on_delete=models.CASCADE,verbose_name = _('工作人员'))
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE,verbose_name = _('病人'))
 
-    excel = models.FileField(upload_to='uploads/excel/medical', blank = True, validators=[FileExtensionValidator(['xlsx'])])
+    excel = models.FileField(_("医疗excel"),upload_to='uploads/excel/medical', blank = True, validators=[FileExtensionValidator(['xlsx','xls'])])
 
-    image1 = models.FileField(upload_to='uploads/image1/medical', blank = True, validators=[FileExtensionValidator(['png','jpeg','jpg'])])
-    image2 = models.FileField(upload_to='uploads/image2/medical', blank = True, validators=[FileExtensionValidator(['png','jpeg','jpg'])])
+    image1 = models.FileField(_("图片1"), upload_to='uploads/image1/medical', blank = True, validators=[FileExtensionValidator(['png','jpeg','jpg'])])
+    image2 = models.FileField(_("图片2"), upload_to='uploads/image2/medical', blank = True, validators=[FileExtensionValidator(['png','jpeg','jpg'])])
     
-    video1 = models.FileField(upload_to='uploads/video1/medical', blank = True, validators=[FileExtensionValidator(['mpg','avi','mp4'])])
-    creation_date = models.DateTimeField(default=timezone.now, blank=True)
+    video1 = models.FileField(_("视频"),upload_to='uploads/video1/medical', blank = True, validators=[FileExtensionValidator(['mpg','avi','mp4'])])
+    creation_date = models.DateTimeField(_('创建时间'), default=timezone.now, blank=True)
 
     def __str__(self):
         return str(self.patient)
@@ -124,7 +124,7 @@ class MedicalHistoryExcelAdmin(admin.ModelAdmin):
 
 @python_2_unicode_compatible
 class MedicalHistoryExcelTemplate(models.Model):
-    excel = models.FileField(upload_to='uploads/excel/medicaltemplate', blank = True, validators=[FileExtensionValidator(['xlsx'])])
+    excel = models.FileField(upload_to='uploads/excel/medicaltemplate', blank = True, validators=[FileExtensionValidator(['xlsx','xls'])])
     def __str__(self):
         return str(self.excel)
 
@@ -134,16 +134,16 @@ class MedicalHistoryExcelTemplate(models.Model):
 
 @python_2_unicode_compatible
 class MedicineHistoryExcel(models.Model):
-    stuff = models.ForeignKey(Stuff, on_delete=models.CASCADE)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    stuff = models.ForeignKey(Stuff, on_delete=models.CASCADE,verbose_name = _('工作人员'))
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE,verbose_name = _('病人'))
 
-    excel = models.FileField(upload_to='uploads/excel/medicine', blank = True, validators=[FileExtensionValidator(['xlsx'])])
+    excel = models.FileField(_("治疗excel"),upload_to='uploads/excel/medicine', blank = True, validators=[FileExtensionValidator(['xlsx','xls'])])
 
-    image1 = models.FileField(upload_to='uploads/image1/medicine', blank = True, validators=[FileExtensionValidator(['png','jpeg','jpg'])])
-    image2 = models.FileField(upload_to='uploads/image2/medicine', blank = True, validators=[FileExtensionValidator(['png','jpeg','jpg'])])
+    image1 = models.FileField(_("图片1"),upload_to='uploads/image1/medicine', blank = True, validators=[FileExtensionValidator(['png','jpeg','jpg'])])
+    image2 = models.FileField(_("图片2"),upload_to='uploads/image2/medicine', blank = True, validators=[FileExtensionValidator(['png','jpeg','jpg'])])
     
-    video1 = models.FileField(upload_to='uploads/video1/medicine', blank = True, validators=[FileExtensionValidator(['mpg','avi','mp4'])])
-    creation_date = models.DateTimeField(default=timezone.now, blank=True)
+    video1 = models.FileField(_("视频"),upload_to='uploads/video1/medicine', blank = True, validators=[FileExtensionValidator(['mpg','avi','mp4'])])
+    creation_date = models.DateTimeField(_('创建时间'), default=timezone.now, blank=True)
 
     def __str__(self):
         return str(self.patient)
@@ -162,7 +162,7 @@ class MedicineHistoryExcelAdmin(admin.ModelAdmin):
 
 @python_2_unicode_compatible
 class MedicineHistoryExcelTemplate(models.Model):
-    excel = models.FileField(upload_to='uploads/excel/medicinetemplate', blank = True, validators=[FileExtensionValidator(['xlsx'])])
+    excel = models.FileField(upload_to='uploads/excel/medicinetemplate', blank = True, validators=[FileExtensionValidator(['xlsx', 'xls'])])
     def __str__(self):
         return str(self.excel)
     class Meta:
@@ -171,16 +171,16 @@ class MedicineHistoryExcelTemplate(models.Model):
 
 @python_2_unicode_compatible
 class TreatmentHistoryExcel(models.Model):
-    stuff = models.ForeignKey(Stuff, on_delete=models.CASCADE)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    stuff = models.ForeignKey(Stuff, on_delete=models.CASCADE, verbose_name = _('工作人员'))
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, verbose_name = _('病人'))
 
-    excel = models.FileField(upload_to='uploads/excel/treatment', blank = True, validators=[FileExtensionValidator(['xlsx'])])
+    excel = models.FileField(_("病历excel"), upload_to='uploads/excel/treatment', blank = True, validators=[FileExtensionValidator(['xlsx', 'xls'])])
 
-    image1 = models.FileField(upload_to='uploads/image1/treatment', blank = True, validators=[FileExtensionValidator(['png','jpeg','jpg'])])
-    image2 = models.FileField(upload_to='uploads/image2/treatment', blank = True, validators=[FileExtensionValidator(['png','jpeg','jpg'])])
+    image1 = models.FileField(_("图片1"), upload_to='uploads/image1/treatment', blank = True, validators=[FileExtensionValidator(['png','jpeg','jpg'])])
+    image2 = models.FileField(_("图片2"), upload_to='uploads/image2/treatment', blank = True, validators=[FileExtensionValidator(['png','jpeg','jpg'])])
     
-    video1 = models.FileField(upload_to='uploads/video1/treatment', blank = True, validators=[FileExtensionValidator(['mpg','avi','mp4'])])
-    creation_date = models.DateTimeField(default=timezone.now, blank=True)
+    video1 = models.FileField(_("视频"),upload_to='uploads/video1/treatment', blank = True, validators=[FileExtensionValidator(['mpg','avi','mp4'])])
+    creation_date = models.DateTimeField(_('创建时间'),default=timezone.now, blank=True)
 
     def __str__(self):
         return str(self.patient)
@@ -199,7 +199,7 @@ class TreatmentHistoryExcelAdmin(admin.ModelAdmin):
 
 @python_2_unicode_compatible
 class TreatmentHistoryExcelTemplate(models.Model):
-    excel = models.FileField(upload_to='uploads/excel/treatmenttemplate', blank = True, validators=[FileExtensionValidator(['xlsx'])])
+    excel = models.FileField(upload_to='uploads/excel/treatmenttemplate', blank = True, validators=[FileExtensionValidator(['xlsx','xls'])])
     def __str__(self):
         return str(self.excel)
     class Meta:
@@ -207,8 +207,8 @@ class TreatmentHistoryExcelTemplate(models.Model):
         verbose_name_plural = '病历excel模版'
 
 class ReferralHistory(models.Model):
-    phonenumber = models.CharField(max_length=DEFAULT_LENGTH)
-    verifycode = models.CharField(max_length=DEFAULT_LENGTH, blank=True)
+    phonenumber = models.CharField(_('电话号码'),max_length=DEFAULT_LENGTH)
+    verifycode = models.CharField(_('邀请码'),max_length=DEFAULT_LENGTH, blank=True)
     
     def __str__(self):
         return str(self.phonenumber)
@@ -219,14 +219,14 @@ class ReferralHistory(models.Model):
 
 @python_2_unicode_compatible
 class DiseaseType(models.Model):
-    diseasetype = models.CharField(max_length=DEFAULT_LENGTH,blank=True)
+    diseasetype = models.CharField(_('diseasetype'), max_length=DEFAULT_LENGTH,blank=True)
         
     def __str__(self):
         return str(self.diseasetype)
 
     class Meta:
-        verbose_name = '疾病l类别'
-        verbose_name_plural = '疾病l类别'
+        verbose_name = '疾病类型'
+        verbose_name_plural = '疾病类型'
 
 def content_file_name(instance, filename):
     ext = filename.split('.')[-1]

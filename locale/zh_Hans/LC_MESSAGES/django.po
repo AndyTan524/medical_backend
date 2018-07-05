@@ -32,19 +32,19 @@ msgstr "密码"
 
 #: mamm/models.py:186
 msgid "diseasetype"
-msgstr "疾病类别"
+msgstr "疾病类型"
 
 #: mamm/models.py:192
 #, fuzzy
 #| msgid "diseasetype"
 msgid "disease type"
-msgstr "疾病类别"
+msgstr "疾病类型"
 
 #: mamm/models.py:193
 #, fuzzy
 #| msgid "diseasetype"
 msgid "disease types"
-msgstr "疾病类别"
+msgstr "疾病类型"
 
 #: medical_backend/settings.py:148
 msgid "English"
