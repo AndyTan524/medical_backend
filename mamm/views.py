@@ -26,7 +26,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 #Own
-from models import Patient, Stuff, MedicalHistory, MedicalHistoryExcel, MedicalHistoryExcelTemplate, Doctor, MedicineHistoryExcel, TreatmentHistoryExcel, ReferralHistory, PdfTemplate
+from models import Patient, Stuff, MedicalHistory, MedicalHistoryExcel, MedicalHistoryExcelTemplate, Doctor, MedicineHistoryExcel, TreatmentHistoryExcel, ReferralHistory, PdfTemplate, TextImageTemplate
 from serializers import PatientSerializer
 
 
@@ -111,6 +111,72 @@ def send_verify_sms(phonenumber, content):
     r = requests.post("https://sh2.ipyy.com/smsJson.aspx?action=send", data=payload, headers=headers)
     return r.status_code
 
+def get_additional_data(patient):
+    additional_data = {}
+    if patient.disease_type != None and patient.disease_type.diseasetype != 'applogo':
+        text_image = TextImageTemplate.objects.get(disease_type = patient.disease_type)
+        if text_image.image1:
+            additional_data['image1'] = text_image.image1.url
+        if text_image.image2:
+            additional_data['image2'] = text_image.image2.url
+        if text_image.image3:
+            additional_data['image3'] = text_image.image3.url
+        if text_image.image4:
+            additional_data['image4'] = text_image.image4.url
+        if text_image.image5:
+            additional_data['image5'] = text_image.image5.url
+        if text_image.image6:
+            additional_data['image6'] = text_image.image6.url
+        if text_image.image7:
+            additional_data['image7'] = text_image.image7.url
+        if text_image.image8:
+            additional_data['image8'] = text_image.image8.url
+        if text_image.image9:
+            additional_data['image9'] = text_image.image9.url
+        if text_image.image10:
+            additional_data['image10'] = text_image.image10.url
+        if text_image.heading1:
+            additional_data['heading1'] = text_image.heading1
+        if text_image.heading2:
+            additional_data['heading2'] = text_image.heading2
+        if text_image.heading3:
+            additional_data['heading3'] = text_image.heading3
+        if text_image.heading4:
+            additional_data['heading4'] = text_image.heading4
+        if text_image.heading5:
+            additional_data['heading5'] = text_image.heading5
+        if text_image.heading6:
+            additional_data['heading6'] = text_image.heading6
+        if text_image.heading7:
+            additional_data['heading7'] = text_image.heading7
+        if text_image.heading8:
+            additional_data['heading8'] = text_image.heading8
+        if text_image.heading9:
+            additional_data['heading9'] = text_image.heading9
+        if text_image.heading10:
+            additional_data['heading10'] = text_image.heading10
+        if text_image.content1:
+            additional_data['content1'] = text_image.content1
+        if text_image.content2:
+            additional_data['content2'] = text_image.content2
+        if text_image.content3:
+            additional_data['content3'] = text_image.content3
+        if text_image.content4:
+            additional_data['content4'] = text_image.content4
+        if text_image.content5:
+            additional_data['content5'] = text_image.content5
+        if text_image.content6:
+            additional_data['content6'] = text_image.content6
+        if text_image.content7:
+            additional_data['content7'] = text_image.content7
+        if text_image.content8:
+            additional_data['content8'] = text_image.content8
+        if text_image.content9:
+            additional_data['content9'] = text_image.content9
+        if text_image.content10:
+            additional_data['content10'] = text_image.content10
+    return additional_data
+       
 @api_view(['POST'])
 def login(request):
     if request.method == 'POST':
@@ -124,6 +190,7 @@ def login(request):
         if patient is not None:
 
             if check_password(password, patient.password):
+                additional_data = get_additional_data(patient)
                 send_data = {
                     'first_name': patient.first_name,
                     'last_name': patient.last_name,
@@ -131,8 +198,11 @@ def login(request):
                     'phonenumber': patient.phonenumber,
                     'chujonservice': patient.chujonservice,
                     'huijonservice': patient.huijonservice,
-                    'jiuyiservice': patient.jiuyiservice
+                    'jiuyiservice': patient.jiuyiservice,
+                    'additional_data': additional_data
                 }
+
+                print(additional_data)                    
                 print(send_data)
                 encoded_token = jwt.encode(send_data, SECRET, algorithm = 'HS256').decode('utf-8')
                 print(encoded_token)
@@ -169,6 +239,7 @@ def register(request):
                     password = request.data['password']
                     print(make_password(password))
                     request.data['password'] = make_password(password)
+
                     serializer = PatientSerializer(data=request.data)
                     if serializer.is_valid():
                         serializer.save()

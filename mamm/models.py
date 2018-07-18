@@ -17,6 +17,17 @@ DEFAULT_LENGTH = 50
 
 # Create your models here.
 @python_2_unicode_compatible
+class DiseaseType(models.Model):
+    diseasetype = models.CharField(_('diseasetype'), max_length=DEFAULT_LENGTH,blank=True)
+        
+    def __str__(self):
+        return str(self.diseasetype)
+
+    class Meta:
+        verbose_name = '疾病类型'
+        verbose_name_plural = '疾病类型'
+
+@python_2_unicode_compatible
 class Stuff(models.Model):  #Staff Account
     user = models.OneToOneField(User, verbose_name=_("用户"))
     hospital = models.CharField(_("医院"),max_length=DEFAULT_LENGTH, blank=True)
@@ -58,7 +69,8 @@ class Patient(models.Model):
     huijonservice = models.BooleanField(_('会诊服务'), blank=True, default=False) #0: Not Purchase, 1: Purchase
     jiuyiservice = models.BooleanField(_('就一服务'), blank=True, default=False) #0: Not Purchase, 1: Purchase
     verifycode = models.CharField(_("邀请码"), max_length=DEFAULT_LENGTH, blank=True)
-    
+    disease_type = models.ForeignKey(DiseaseType, on_delete=models.CASCADE, verbose_name=_("疾病类型"), blank=True, default=1)
+
     def __str__(self):
         return str(self.phonenumber)
     
@@ -67,7 +79,7 @@ class Patient(models.Model):
         verbose_name_plural = '病人'
 
 class PatientAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'email', 'phonenumber', 'chujonservice', 'huijonservice', 'jiuyiservice')
+    list_display = ('phonenumber', 'first_name', 'last_name', 'email', 'chujonservice', 'huijonservice', 'jiuyiservice')
 
 @python_2_unicode_compatible
 class MedicalHistory(models.Model):
@@ -217,17 +229,6 @@ class ReferralHistory(models.Model):
         verbose_name = '邀请模版'
         verbose_name_plural = '邀请模版'
 
-@python_2_unicode_compatible
-class DiseaseType(models.Model):
-    diseasetype = models.CharField(_('diseasetype'), max_length=DEFAULT_LENGTH,blank=True)
-        
-    def __str__(self):
-        return str(self.diseasetype)
-
-    class Meta:
-        verbose_name = '疾病类型'
-        verbose_name_plural = '疾病类型'
-
 def content_file_name(instance, filename):
     ext = filename.split('.')[-1]
     filename = "%s.pdf" % (instance.disease_type.diseasetype)
@@ -241,3 +242,45 @@ class PdfTemplate(models.Model):
     class Meta:
         verbose_name = 'pdf模版'
         verbose_name_plural = 'pdf模版'
+
+@python_2_unicode_compatible
+class TextImageTemplate(models.Model):
+    disease_type = models.ForeignKey(DiseaseType, on_delete=models.CASCADE, verbose_name=_("疾病类型"))
+    image1 = models.FileField(_("图片1"), upload_to='uploads/imagetemplate/', blank = True)
+    image2 = models.FileField(_("图片2"), upload_to='uploads/imagetemplate/', blank = True)
+    image3 = models.FileField(_("图片3"), upload_to='uploads/imagetemplate/', blank = True)
+    image4 = models.FileField(_("图片4"), upload_to='uploads/imagetemplate/', blank = True)
+    image5 = models.FileField(_("图片5"), upload_to='uploads/imagetemplate/', blank = True)
+    image6 = models.FileField(_("图片6"), upload_to='uploads/imagetemplate/', blank = True)
+    image7 = models.FileField(_("图片7"), upload_to='uploads/imagetemplate/', blank = True)
+    image9 = models.FileField(_("图片8"), upload_to='uploads/imagetemplate/', blank = True)
+    image8 = models.FileField(_("图片9"), upload_to='uploads/imagetemplate/', blank = True)
+    image10 = models.FileField(_("图片10"), upload_to='uploads/imagetemplate/', blank = True)
+    heading1 = models.CharField(_('题目1'),max_length=DEFAULT_LENGTH, blank = True)
+    heading2 = models.CharField(_('题目2'),max_length=DEFAULT_LENGTH, blank = True)
+    heading3 = models.CharField(_('题目3'),max_length=DEFAULT_LENGTH, blank = True)
+    heading4 = models.CharField(_('题目4'),max_length=DEFAULT_LENGTH, blank = True)
+    heading5 = models.CharField(_('题目5'),max_length=DEFAULT_LENGTH, blank = True)
+    heading6 = models.CharField(_('题目6'),max_length=DEFAULT_LENGTH, blank = True)
+    heading7 = models.CharField(_('题目7'),max_length=DEFAULT_LENGTH, blank = True)
+    heading8 = models.CharField(_('题目8'),max_length=DEFAULT_LENGTH, blank = True)
+    heading9 = models.CharField(_('题目9'),max_length=DEFAULT_LENGTH, blank = True)
+    heading10 = models.CharField(_('题目10'),max_length=DEFAULT_LENGTH, blank = True)
+    content1 = models.TextField(_('内容1'),max_length=500, blank = True)
+    content2 = models.TextField(_('内容2'),max_length=500, blank = True)
+    content3 = models.TextField(_('内容3'),max_length=500, blank = True)
+    content4 = models.TextField(_('内容4'),max_length=500, blank = True)
+    content5 = models.TextField(_('内容5'),max_length=500, blank = True)
+    content6 = models.TextField(_('内容6'),max_length=500, blank = True)
+    content7 = models.TextField(_('内容7'),max_length=500, blank = True)
+    content8 = models.TextField(_('内容8'),max_length=500, blank = True)
+    content9 = models.TextField(_('内容9'),max_length=500, blank = True)
+    content10 = models.TextField(_('内容10'),max_length=500, blank = True)
+    disease_type = models.ForeignKey(DiseaseType, on_delete=models.CASCADE, verbose_name=_("疾病类型"), blank=True, default=0)
+    
+    def __str__(self):
+        return str(self.disease_type)
+
+    class Meta:
+        verbose_name = '首页模版'
+        verbose_name_plural = '首页模版'

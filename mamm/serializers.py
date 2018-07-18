@@ -4,7 +4,7 @@ from rest_framework.serializers import ModelSerializer
 class PatientSerializer(ModelSerializer):
     class Meta:
         model = Patient
-        fields = ('first_name', 'last_name', 'email', 'phonenumber', 'password')
+        fields = ('first_name', 'last_name', 'email', 'phonenumber', 'password', 'disease_type')
     
     # def __init__(self, *args, **kwargs):
     #     super(ModelSerializer, self).__init__(*args, **kwargs)
