@@ -377,6 +377,14 @@ def getmedicalhistory(request):
             dicti['patient_name'] = history.patient.first_name + ' ' + history.patient.last_name
             dicti['phonenumber'] = history.patient.phonenumber
             dicti['creation_date'] = history.creation_date
+            
+            '''
+            Get the PDF
+            '''
+            dicti['pdf'] = ""
+            if history.disease_type != None and history.disease_type.diseasetype != 'applogo':
+                pdf_template = PdfTemplate.objects.get(disease_type=history.disease_type)
+                dicti['pdf'] = pdf_template.pdf.url
 
             excel_data = []
             for rowObjects in sheet[sheet.dimensions]:

@@ -118,6 +118,7 @@ class MedicalHistoryExcel(models.Model):
     
     video1 = models.FileField(_("视频"),upload_to='uploads/video1/medical', blank = True, validators=[FileExtensionValidator(['mpg','avi','mp4'])])
     creation_date = models.DateTimeField(_('创建时间'), default=timezone.now, blank=True)
+    disease_type = models.ForeignKey(DiseaseType, on_delete=models.CASCADE, verbose_name=_("疾病类型"), blank=True, default=1)
 
     def __str__(self):
         return str(self.patient)
@@ -156,6 +157,7 @@ class MedicineHistoryExcel(models.Model):
     
     video1 = models.FileField(_("视频"),upload_to='uploads/video1/medicine', blank = True, validators=[FileExtensionValidator(['mpg','avi','mp4'])])
     creation_date = models.DateTimeField(_('创建时间'), default=timezone.now, blank=True)
+    disease_type = models.ForeignKey(DiseaseType, on_delete=models.CASCADE, verbose_name=_("疾病类型"), blank=True, default=1)
 
     def __str__(self):
         return str(self.patient)
@@ -193,6 +195,7 @@ class TreatmentHistoryExcel(models.Model):
     
     video1 = models.FileField(_("视频"),upload_to='uploads/video1/treatment', blank = True, validators=[FileExtensionValidator(['mpg','avi','mp4'])])
     creation_date = models.DateTimeField(_('创建时间'),default=timezone.now, blank=True)
+    disease_type = models.ForeignKey(DiseaseType, on_delete=models.CASCADE, verbose_name=_("疾病类型"), blank=True, default=1)
 
     def __str__(self):
         return str(self.patient)
