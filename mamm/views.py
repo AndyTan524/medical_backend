@@ -601,15 +601,55 @@ def sendbulkmessage(request):
 @login_required
 @api_view(['POST'])
 def processbulkmessage(request):
+    invalid_phonenumber = 0
+    registered_phonenumber = 0
     count = request.POST.get('savecount')
+    oldpeople = request.POST.get('oldpeople')
     print(count)
-    for i in range(0, int(count)+1):
+    print(oldpeople)
+    if oldpeople == 'True':
+        if request.user.is_superuser:
+            for i in range(0, int(count)):
+                # print(request.POST.get('phonenumber' +`i`))
+                phonenumber = request.POST.get('phonenumber' +`i`)
+                if phonenumber != None and len(phonenumber) >= 8:
+                    rand_str = phonenumber[-6:]
+                    ref_history = ReferralHistory(phonenumber=phonenumber, verifycode=rand_str)
+                    ref_history.save()
+                    try:
+                        patient = Patient.objects.get(phonenumber=phonenumber)
+                    except Patient.DoesNotExist:
+                        patient = None
+                    if patient is None:
+                        patient = Patient()
+                        patient.phonenumber = phonenumber
+                        patient.password = make_password(rand_str)
+                        patient.save()
+                        content = "【用心医】欢迎您，App程序下载地址是 " + "https://medicalapp" + "用户名是您的手机号码，您的默认登陆密码为手机号码的后6位数字"+ "【爱克】"
+                        statuscode = send_verify_sms(phonenumber, content)
+                    else:
+                        registered_phonenumber = registered_phonenumber + 1
+                else:
+                    invalid_phonenumber = invalid_phonenumber + 1
+            
+            if invalid_phonenumber != 0:
+                return HttpResponse("Message Sent, but there are " + str(invalid_phonenumber) + " invalid phonenumbers and " + str(registered_phonenumber) + "Registered Phonenumbers.")
+            return HttpResponse("Message Sent")
+        else:
+            return HttpResponse("工作人员不能操作")
+
+    for i in range(0, int(count)):
         # print(request.POST.get('phonenumber' +`i`))
-        if request.POST.get('phonenumber' +`i`) != None:
-            phonenumber = request.POST.get('phonenumber' +`i`)
+        phonenumber = request.POST.get('phonenumber' +`i`)
+        if phonenumber != None and len(phonenumber) > 8 :
             rand_str = get_random_string(length=6, allowed_chars='1234567890')
             ref_history = ReferralHistory(phonenumber=phonenumber, verifycode=rand_str)
             ref_history.save()
             content = "【用心医】欢迎您，App程序下载地址是 " + "https://medicalapp" + "邀请码是"+ rand_str +"【爱克】"
             statuscode = send_verify_sms(phonenumber, content)
+        else:
+            invalid_phonenumber = invalid_phonenumber + 1
+    
+    if invalid_phonenumber != 0:
+        return HttpResponse("Message Sent, but there are " + str(invalid_phonenumber) + " invalid phonenumbers")
     return HttpResponse("Message Sent")

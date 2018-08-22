@@ -86,7 +86,11 @@
                     </div>
                 </div>
             </div>
-            <input type="text" id="savecount" name="savecount" value='0'>
+            <div>
+                <input type="checkbox" id="oldpeople" name="oldpeople" value="True">
+                <label for="oldpeople">为老人请求</label>
+            </div>
+            <input type="text" id="savecount" name="savecount" value='1'>
             <input type="submit" class="btn-option" value="Send Verify Code"/>
         </form>
 </div>
@@ -96,7 +100,6 @@
     var count = 1;
     $( document ).ready(function() {
         $(document).on('click','.add-item', function(){
-            $("#savecount").val(count);
             var first = '<div id="phone'+count+'">'+
                             '<div class="col-sm-8 margin-b-8">' +
                                 '<input style="width: 100%" id="phonenumber' +count+'" name="phonenumber' +count +'" placeholder="电话号码"/>' +
@@ -111,15 +114,22 @@
                         '</div>';
             // alert(first)
             count = count + 1;
-            
+            $("#savecount").val(count);
+
             $(this).parent().parent().parent().append(
                 first
             );
         });
         
         $(document).on('click','.remove-item',function() {
-            id = $(this).next()[0].innerHTML;
-            $("#phone"+id).remove();
+            if (count == 1) {
+                alert("Can't remove, you keep 1");
+            } else {
+                id = $(this).next()[0].innerHTML;
+                $("#phone"+id).remove();
+                count -= 1;
+                $("#savecount").val(count);
+            }
         });
     });
 
