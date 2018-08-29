@@ -187,6 +187,12 @@ def login(request):
             patient = Patient.objects.get(email=email)
         except Patient.DoesNotExist:
             patient = None
+        if patient is None:
+            try:
+                patient = Patient.objects.get(phonenumber=email)
+            except Patient.DoesNotExist:
+                patient = None
+
         if patient is not None:
 
             if check_password(password, patient.password):
