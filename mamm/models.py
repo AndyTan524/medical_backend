@@ -67,7 +67,7 @@ class Patient(models.Model):
     password = models.CharField(_('password'), max_length=255)
     chujonservice = models.BooleanField(_('出诊服务'), blank=True, default=False) #0: Not Purchase, 1: Purchase
     huijonservice = models.BooleanField(_('会诊服务'), blank=True, default=False) #0: Not Purchase, 1: Purchase
-    jiuyiservice = models.BooleanField(_('就一服务'), blank=True, default=False) #0: Not Purchase, 1: Purchase
+    jiuyiservice = models.BooleanField(_('就医服务'), blank=True, default=False) #0: Not Purchase, 1: Purchase
     verifycode = models.CharField(_("邀请码"), max_length=DEFAULT_LENGTH, blank=True)
     disease_type = models.ForeignKey(DiseaseType, on_delete=models.CASCADE, verbose_name=_("疾病类型"), blank=True, default=1)
 

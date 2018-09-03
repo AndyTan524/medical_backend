@@ -1,0 +1,18 @@
+{% extends 'admin/base_site.html' %}
+
+{% load static %}
+
+{% block nav-global %}
+
+{% endblock %}
+
+{% block branding %}
+    <div class="head" style="display: flex">
+        <img class="brand_img" src="{% static 'images/wenzi.png'%}" width="50" height="50" alt="logo" style="margin-right: 20px">
+        <h1 id="name">Medical Administration</h1>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <p>custom_text</p>
+{% endblock %}
