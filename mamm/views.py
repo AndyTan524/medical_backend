@@ -419,13 +419,15 @@ def getmedicalhistory(request):
 
 @api_view(['POST'])
 def forgotpass(request):
+    print(request.data)
+
     try:
-        email = request.data['email']
+        phone = request.data['phone']
     except KeyError:
         return Response({'error':{'message':'KeyError'}})
 
     try:
-        patient = Patient.objects.get(email=email)
+        patient = Patient.objects.get(phonenumber=phone)
     except Patient.DoesNotExist:
         patient = None
 
@@ -433,22 +435,19 @@ def forgotpass(request):
         rand_str = get_random_string(length=6, allowed_chars='1234567890')
         patient.verifycode = rand_str
         patient.save()
-        if patient.phonenumber is not None:
-            content = "Verify Code is "+ rand_str +"【爱克】"
-            statuscode = send_verify_sms(patient.phonenumber, content)
-            return Response({'data': 'Success'}, status=200)
-        else:
-            return Response({'error' : {'message':'Patient phone number does not exist'}})
+        content = "Verify Code is "+ rand_str +"【爱克】"
+        statuscode = send_verify_sms(patient.phonenumber, content)
+        return Response({'data': 'Success'}, status=200)
 
     return Response({'error' : {'message':'Patient does not exist'}})
 
 @api_view(['POST'])
 def verifycode(request):
-    email = request.data['email']
+    phone = request.data['phone']
     verifycode = request.data['verifycode']
 
     try:
-        patient = Patient.objects.get(email=email)
+        patient = Patient.objects.get(phonenumber=phone)
     except Patient.DoesNotExist:
         patient = None
 
@@ -462,11 +461,11 @@ def verifycode(request):
 
 @api_view(['POST'])
 def setpass(request):
-    email = request.data['email']
+    phone = request.data['phone']
     password = request.data['password']
 
     try:
-        patient = Patient.objects.get(email=email)
+        patient = Patient.objects.get(phonenumber=phone)
     except Patient.DoesNotExist:
         patient = None
 
