@@ -186,9 +186,9 @@ class MedicineHistoryExcelTemplate(models.Model):
 @python_2_unicode_compatible
 class CommentHistory(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, verbose_name = _('病人'))
-    comment_content = models.CharField(max_length = 1000)
+    comment_content = models.CharField(_('内容'), max_length = 1000)
     creation_date = models.DateTimeField(_('创建时间'),default=timezone.now, blank=True)
-    is_admin_message = models.BooleanField(default=False)
+    is_admin_message = models.BooleanField(_('是否为管理员发送的信息'), default=False)
 
     def __str__(self):
         return str(self.patient) + ' ' + self.comment_content
