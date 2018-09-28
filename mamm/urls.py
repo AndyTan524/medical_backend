@@ -36,6 +36,10 @@ urlpatterns = [
 	url(r'^sendbulkmessage', views.sendbulkmessage, name='sendbulkmessage'),
 	url(r'^bulkmessageprocess/', views.processbulkmessage, name='process_bulkmessage'),
 
+	# Comment
+	url(r'^api/postcomment/', views.post_comment, name='post_comment'),
+	url(r'^api/getcommenthistory/', views.get_comment_history, name='get_comment_history'),
+
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

@@ -13,6 +13,7 @@ from .models import ReferralHistory
 from .models import PdfTemplate
 from .models import DiseaseType
 from .models import TextImageTemplate
+from .models import CommentHistory
 
 admin.site.register(Stuff)
 admin.site.register(Patient, PatientAdmin)
@@ -27,6 +28,7 @@ admin.site.register(ReferralHistory)
 admin.site.register(PdfTemplate)
 admin.site.register(DiseaseType)
 admin.site.register(TextImageTemplate, )
+admin.site.register(CommentHistory, )
 admin.site.site_header = _('Medical administration')
 admin.site.site_title = _('Medical administration')
 admin.site.index_title = _('Medical administration')

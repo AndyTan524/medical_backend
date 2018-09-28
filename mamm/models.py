@@ -184,6 +184,19 @@ class MedicineHistoryExcelTemplate(models.Model):
         verbose_name_plural = '治疗excel模版'
 
 @python_2_unicode_compatible
+class CommentHistory(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, verbose_name = _('病人'))
+    comment_content = models.CharField(max_length = 1000)
+    creation_date = models.DateTimeField(_('创建时间'),default=timezone.now, blank=True)
+    is_admin_message = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.patient) + ' ' + self.comment_content
+    class Meta:
+        verbose_name = '留言'
+        verbose_name_plural = '留言'
+
+@python_2_unicode_compatible
 class TreatmentHistoryExcel(models.Model):
     stuff = models.ForeignKey(Stuff, on_delete=models.CASCADE, verbose_name = _('工作人员'))
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, verbose_name = _('病人'))

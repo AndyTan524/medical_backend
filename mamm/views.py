@@ -26,7 +26,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 #Own
-from models import Patient, Stuff, MedicalHistory, MedicalHistoryExcel, MedicalHistoryExcelTemplate, Doctor, MedicineHistoryExcel, TreatmentHistoryExcel, ReferralHistory, PdfTemplate, TextImageTemplate
+from models import Patient, Stuff, MedicalHistory, MedicalHistoryExcel, MedicalHistoryExcelTemplate, Doctor, MedicineHistoryExcel, TreatmentHistoryExcel, ReferralHistory, PdfTemplate, TextImageTemplate, CommentHistory
 from serializers import PatientSerializer
 
 
@@ -658,3 +658,39 @@ def processbulkmessage(request):
     if invalid_phonenumber != 0:
         return HttpResponse("Message Sent, but there are " + str(invalid_phonenumber) + " invalid phonenumbers")
     return HttpResponse("Message Sent")
+
+@api_view(['POST'])
+def post_comment(request):
+
+    try:
+        phone = request.data['phone']
+    except:
+        return Response({'message':"Phonenumber is missing"}, status=400)
+    try:
+        patient = Patient.objects.get(phonenumber=phone)
+    except:
+        return Response({'message': "Patient Doesn't exist"}, status=400) 
+    comment_history = CommentHistory(patient=patient, comment_content=request.data['comment'])
+    comment_history.save()
+    return Response({'message' :' Comment Saved'}, status=200)
+
+@api_view(['POST'])
+def get_comment_history(request):
+
+    try:
+        phone = request.data['phone']
+    except:
+        return Response({'message':"Phonenumber is missing"}, status=400)
+    try:
+        patient = Patient.objects.get(phonenumber=phone)
+    except:
+        return Response({'message': "Patient Doesn't exist"}, status=400) 
+    comment_histories = CommentHistory.objects.filter(patient=patient)
+    comments = []
+    for comment_h in comment_histories:
+        comments.append({
+            'content': comment_h.comment_content,
+            'admin': comment_h.is_admin_message,
+            'timestamp': comment_h.creation_date
+        })
+    return Response({'data': comments})
