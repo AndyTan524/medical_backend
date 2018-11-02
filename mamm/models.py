@@ -64,7 +64,7 @@ class Patient(models.Model):
     last_name = models.CharField(_('名'), max_length=DEFAULT_LENGTH, blank=True)
     email = models.EmailField(_('邮箱'), max_length=DEFAULT_LENGTH, blank=True)
     phonenumber = models.CharField(_('病人电话'), max_length=DEFAULT_LENGTH)
-    password = models.CharField(_('password'), max_length=255)
+    password = models.CharField(_('password'), max_length=255, editable=False)
     chujonservice = models.BooleanField(_('出诊服务'), blank=True, default=False) #0: Not Purchase, 1: Purchase
     huijonservice = models.BooleanField(_('会诊服务'), blank=True, default=False) #0: Not Purchase, 1: Purchase
     jiuyiservice = models.BooleanField(_('就医服务'), blank=True, default=False) #0: Not Purchase, 1: Purchase
